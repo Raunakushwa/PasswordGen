@@ -1,10 +1,21 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 
 function App() {
   const [length, setLength] = useState(8);
   const [numberAllowed, setNumberAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
   const [password, setPassword] = useState("")
+
+  //useref hook
+  const passwordRef = useRef(null);
+
+  const copyPasswordToClipboard=useCallback(()=>{
+    passwordRef.current?.select();  //this line will select password and turn it blue
+    passwordRef.current?.setSelectionRange(0,3); //this line will select only 3 characters from password
+    window.navigator.clipboard.writeText(password);  //due to thisline password will be copied
+  },[password])
+
+
   const passwordGenerator = useCallback(() => {
     let pass = "";
     let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -24,9 +35,9 @@ function App() {
 
   }, [length, numberAllowed, charAllowed, setPassword]);
 
-useEffect(()=>{
-  passwordGenerator()
-},[length,charAllowed,numberAllowed,passwordGenerator])
+  useEffect(() => {
+    passwordGenerator()
+  }, [length, charAllowed, numberAllowed, passwordGenerator])
 
   return (
     <>
@@ -38,8 +49,9 @@ useEffect(()=>{
             className='outline-none w-full px-3 py-1'
             placeholder='password'
             readOnly
+            ref={passwordRef}
           />
-          <button className="bg-blue-700 outline-none text-white px-3 shrink-0 py-0.5">copy</button>
+          <button  onClick={copyPasswordToClipboard} className="bg-blue-700 outline-none text-white px-3 shrink-0 py-0.5">copy</button>
         </div>
         <div className="flex text-sm gap-x-5">     {/* this div will contains all functions of choosing password type */}
           <div className="flex items-center gap-x-1 slider">     {/* this div contains slider */}
